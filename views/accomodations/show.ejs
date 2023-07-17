@@ -1,0 +1,140 @@
+<% layout('layout/boiler') %>
+
+    <link rel="stylesheet" href="/stylesheets/stars.css">
+    <div class="row mb-3">
+        <div class="col-6 ">
+           
+            <div id="carouselExample" class="carousel slide">
+                <div class="carousel-inner">
+                    <% Accomodation.images.forEach((image,i)=>{ %>
+                        <div class="carousel-item active <%= i ===0?'active' : '' %>">
+                            <img src="<%= image.url %>" class="d-block w-100" alt="">
+                          </div>
+                   <%  })  %>
+                 
+                </div>
+                <% if (Accomodation.images.length > 1) { %>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              <%  } %>
+              </div>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <%= Accomodation.title%>
+                    </h5>
+                    <p class="card-text">
+                        <%=Accomodation.description%>
+                    </p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item text-muted">
+                        <%=Accomodation.location%>
+                    </li>
+                    <li class="list-group-item text-muted">
+                        <%=Accomodation.author.username%>
+                    </li>
+                    <li class="list-group-item">$<%= Accomodation.price%>/night</li>
+                </ul>
+                <% if ( currentUser && Accomodation.author.equals(currentUser._id) ) { %>
+                    <div class="card-body">
+                        <a class="card-link btn btn-info" href="/Accomodation/<%=Accomodation._id%>/edit">Edit</a>
+                        <form class="d-inline" action="/Accomodation/<%=Accomodation._id%>?_method=DELETE"
+                            method="POST">
+                            <button class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
+                    <% } %>
+
+                        <div class="card-footer text-muted">
+                            2 days ago
+                        </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div id='map' style='width: 400px; height: 300px;'></div>
+
+            <div id="menu">
+            <input id="satellite-streets-v12" type="radio" name="rtoggle" value="satellite" checked="checked">
+            <!-- See a list of Mapbox-hosted public styles at -->
+            <!-- https://docs.mapbox.com/api/maps/styles/#mapbox-styles -->
+            <label for="satellite-streets-v12">satellite streets</label>
+            <input id="light-v11" type="radio" name="rtoggle" value="light">
+            <label for="light-v11">light</label>
+            <input id="dark-v11" type="radio" name="rtoggle" value="dark">
+            <label for="dark-v11">dark</label>
+            <input id="streets-v12" type="radio" name="rtoggle" value="streets">
+            <label for="streets-v12">streets</label>
+            <input id="outdoors-v12" type="radio" name="rtoggle" value="outdoors">
+            <label for="outdoors-v12">outdoors</label>
+            </div>
+            <% if(currentUser){ %>
+                <h2>Leave a Review</h2>
+                <form action="/Accomodation/<%= Accomodation._id %>/reviews" class="validated-form mb-3" method="post"
+                    class="mb-3" novalidate>
+                    <div class="mb-3">
+                        <label class="form-label" for="rating">Rating</label>
+                        <fieldset class="starability-coinFlip">
+                            <input type="radio" id="no-rate" class="input-no-rate" name="Review[rating]" value="0" checked aria-label="No rating." />
+                            <input type="radio" id="first-rate1" name="Review[rating]" value="1" />
+                            <label for="first-rate1" title="Terrible">1 star</label>
+                            <input type="radio" id="first-rate2" name="Review[rating]" value="2" />
+                            <label for="first-rate2" title="Not good">2 stars</label>
+                            <input type="radio" id="first-rate3" name="Review[rating]" value="3" />
+                            <label for="first-rate3" title="Average">3 stars</label>
+                            <input type="radio" id="first-rate4" name="Review[rating]" value="4" />
+                            <label for="first-rate4" title="Very good">4 stars</label>
+                            <input type="radio" id="first-rate5" name="Review[rating]" value="5" />
+                            <label for="first-rate5" title="Amazing">5 stars</label>
+                          </fieldset>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="body" class="form-label">Review:</label>
+                        <textarea class="form-control" name="Review[body]" id="body" cols="30" rows="3"
+                            required></textarea>
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+
+                    </div>
+
+                    <button class="btn btn-success"> Submit</button>
+                </form>
+                <% } %>
+                    <% for (let iterator of Accomodation.reviews) { %>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <h5 class="card-subtitle mb-2 text-muted">By <%= iterator.author.username %>
+                                    </h5>
+                                    
+                                    <p class="starability-result" data-rating="<%= iterator.rating %>">
+                                        Rated: <%= iterator.rating %> stars
+                                    </p>
+                                    
+                                    <p class="card-text">Review: <%= iterator.body %>
+                                    </p>
+                                    <% if ( currentUser && iterator.author.equals(currentUser._id) ) { %>
+                                        <form
+                                            action="/Accomodation/<%= Accomodation._id %>/reviews/<%= iterator._id %>?_method=DELETE"
+                                            method="post">
+                                            <button class="btn btn-sm btn-danger">DELETE</button>
+                                        </form>
+                                        <% } %>
+                                </div>
+                            </div>
+                        </div>
+                        <% } %>
+        </div>
+        <script>
+            const MapToken = '<%- process.env.MAPBOX_TOKEN %>';
+            const accom= <%-JSON.stringify(Accomodation)%>
+        </script>
+    <script src="/javascripts/show.js"></script>

@@ -1,0 +1,46 @@
+<% layout('layout/boiler') %>
+<link rel="stylesheet" href="/stylesheets/index.css">
+<link rel="stylesheet" href="/stylesheets/stars.css">
+
+<div class="h1 text-center text-dark" id="pageHeaderTitle">All Accomodations</div>
+     <br>
+     <div id='map' style='width: 100%; height: 500px; border-radius: 20px;'></div>
+
+    <br>
+     
+    <% for(let accomo of homes) {%>
+        
+            <div class="container py-4">
+                <article class="postcard light blue">
+                    <% if(accomo.images.length){ %>
+                    <a class="postcard__img_link" href="/Accomodation/<%=accomo._id%>">
+                        <img class="postcard__img" src="<%=accomo.images[0].thumbnail1000%>" alt="Image Title" />
+                    </a>
+                    <% }else{ %>
+                        <a class="postcard__img_link" href="/Accomodation/<%=accomo._id%>">
+                        <img class="postcard__img" src="https://res.cloudinary.com/dzhkmbnbn/image/upload/v1689343043/Accomodo/jtqtmkb356z5aszwpwqz.jpg" alt="Image Title" />
+                    </a>
+                        <% } %>
+                    <div class="postcard__text t-dark">
+                        <h1 class="postcard__title blue"><a href="/Accomodation/<%=accomo._id%>"><%=accomo.title%></a></h1>
+                        <div class="postcard__subtitle small">
+                            <%= accomo.location%>
+                        </div>
+                        <div class="postcard__bar"></div>
+                        <div class="postcard__preview-txt"><%= accomo.description %></div>
+                        <ul class="postcard__tagbox">
+                            <br>
+                            <a class="btn btn-primary" href="/Accomodation/<%=accomo._id%>">View <%=accomo.title%></a>
+                        </ul>
+                    </div>
+                </div>
+                </article>
+
+        <% } %>
+        <script>
+            const MapToken = '<%- process.env.MAPBOX_TOKEN %>'
+            const accom= {features: <%-JSON.stringify(homes)%>}
+        </script>
+<script src="/javascripts/clustermap.js"></script>
+<script src="/javascripts/show.js"></script>
+
